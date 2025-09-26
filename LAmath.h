@@ -8,9 +8,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h> // for memcpy
+#include <cassert>
+
 #define HOEMEAN static inline
 
 #define LAMATH_PI 3.14159265358979323846
+#define LAMATH_ASSERT(expr, msg) assert((expr) && (msg))
 
 /* types vectors*/
 typedef struct
@@ -67,6 +70,9 @@ typedef struct
     float m[4][4];
 } Mat4f;
 
+_Static_assert(sizeof(Mat2f) == sizeof(float) * 4, "Mat2f size mismatch");
+_Static_assert(sizeof(Mat3f) == sizeof(float) * 9, "Mat3f size mismatch");
+_Static_assert(sizeof(Mat4f) == sizeof(float) * 16, "Mat4f size mismatch");
 /* converstion (deg-> rad ; rad->deg)*/
 
 HOEMEAN float ToRadians(float deg)
@@ -90,7 +96,7 @@ HOEMEAN float Lerp(float x, float y, float t)
 HOEMEAN Vec2f DegToVec(float deg)
 {
     float rad = ToRadians(deg);
-    return Vec2f{cosf(rad), sinf(rad)};
+    return (Vec2f){cosf(rad), sinf(rad)};
 }
 
 HOEMEAN Vec2i vec2i(int x, int y)
@@ -213,6 +219,7 @@ HOEMEAN float vec2f_length(Vec2f v)
 HOEMEAN Vec2f vec2f_normalize(Vec2f v)
 {
     float len = vec2f_length(v);
+    LAMATH_ASSERT(len != 0, "cannot normalize a 0 len vector");
     Vec2f result;
     if (len == 0.0f)
     {
@@ -678,6 +685,8 @@ HOEMEAN Mat4f mat4f_rotate_axis(Vec3f axis, float angle)
 HOEMEAN Mat4f mat4f_perspective(float fov_radians, float aspect, float near, float far)
 {
     Mat4f result = {0};
+    LAMATH_ASSERT(aspect != 0.0f, "Aspect ratio cannot be zero.");
+    assert(tanf(fov_radians / 2.0f) != 0.0f && "Invalid FOV — results in division by zero.");
 
     float f = 1.0f / tanf(fov_radians / 2.0f);
     result.m[0][0] = f / aspect;
@@ -691,6 +700,9 @@ HOEMEAN Mat4f mat4f_perspective(float fov_radians, float aspect, float near, flo
 HOEMEAN Mat4f mat4f_ortho(float left, float right, float bottom, float top, float near, float far)
 {
     Mat4f result = mat4f_identity();
+    LAMATH_ASSERT(right != left, "Ortho matrix: left and right cannot be equal.");
+    LAMATH_ASSERT(top != bottom, "Ortho matrix: top and bottom cannot be equal.");
+    LAMATH_ASSERT(far != near, "Ortho matrix: near and far cannot be equal.");
 
     result.m[0][0] = 2.0f / (right - left);
     result.m[1][1] = 2.0f / (top - bottom);
@@ -826,12 +838,7 @@ HOEMEAN Mat4f mat4f_inverse(Mat4f m)
                  mat[8] * mat[2] * mat[5];
 
     det = mat[0] * invOut[0] + mat[1] * invOut[4] + mat[2] * invOut[8] + mat[3] * invOut[12];
-
-    if (det == 0)
-    {
-        // if det == 0 --> return identity matric ( this could casue problems)
-        return mat4f_identity();
-    }
+    LAMATH_ASSERT(det != 0.0f, "matrix is not invertible..");
 
     det = 1.0f / det;
 
