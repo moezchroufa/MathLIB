@@ -45,9 +45,11 @@ typedef struct
 /* func decl*/
 HOEMEAN RectS InitRect(float x, float y, float w, float h);
 HOEMEAN CircleS InitCircle(float x, float y, float radius);
-HOEMEAN PointS InitPoint(float x, float);
+HOEMEAN PointS InitPoint(float x, float y);
 HOEMEAN LineS InitLine(float sx, float sy, float ex, float ey);
 HOEMEAN TriangleS InitTriangle(Vec2f p1, Vec2f p2, Vec2f p3);
+HOEMEAN PolygonS InitPolygon(Vec2f* vertices, int count);
+HOEMEAN bool AddVertexToPolygon(PolygonS* poly, Vec2f v);
 HOEMEAN bool PointinRect(PointS p, RectS rec);
 HOEMEAN bool RectinRect(RectS a, RectS b);
 HOEMEAN bool CircleinCircle(CircleS a, CircleS b);
@@ -74,3 +76,39 @@ HOEMEAN LineS InitLine(float sx, float sy, float ex, float ey)
 {
     return (LineS){.start = (Vec2f){sx, sy}, .end = (Vec2f){ex, ey}};
 }
+
+HOEMEAN TriangleS InitTriangle(Vec2f p1, Vec2f p2, Vec2f p3)
+{
+    return (TriangleS){.p1 = p1, .p2 = p2, .p3 = p3};
+}
+/* 
+    Keep in mind that our PolygonS is limited to 16 vertex as MAX SIZE.
+    16 is enough to construct any shape you want.
+    if we had the ability to extend from a parent class all of those shape will extend from PolygonS
+*/
+HOEMEAN PolygonS InitPolygon(Vec2f* vertices, int count)
+{
+    PolygonS poly = {0};
+    if (count > POLYGONE_VERTX_MAX)
+        count = POLYGONE_VERTX_MAX;
+    
+    for (int i = 0; i < count; ++i)
+        poly.vertex[i] = vertices[i];
+
+    poly.nbVertex = count;
+    return poly;
+}
+/* 
+    we called Vec2f v as a vertex!
+    it not exactly a vertex beacause it's only have position (x,y)
+    i didn't want to call it a Point! vertex better.
+*/
+HOEMEAN bool AddVertexToPolygon(PolygonS* poly, Vec2f v)
+{
+    if (poly->nbVertex >= POLYGONE_VERTX_MAX)
+        return false;
+
+    poly->vertex[poly->nbVertex++] = v;
+    return true;
+}
+
