@@ -69,9 +69,9 @@ typedef struct
 {
     float m[4][4];
 } Mat4f;
-/* 
+/*
 since assert works only localy in a function ..
-c11 feature : _Static_assert(expr,msg) 
+c11 feature : _Static_assert(expr,msg)
 works in global state.
 */
 _Static_assert(sizeof(Mat2f) == sizeof(float) * 4, "Mat2f size mismatch");
