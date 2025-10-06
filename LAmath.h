@@ -690,7 +690,8 @@ HOEMEAN Mat4f mat4f_perspective(float fov_radians, float aspect, float near, flo
 {
     Mat4f result = {0};
     LAMATH_ASSERT(aspect != 0.0f, "Aspect ratio cannot be zero.");
-    assert(tanf(fov_radians / 2.0f) != 0.0f && "Invalid FOV — results in division by zero.");
+    LAMATH_ASSERT(tanf(fov_radians/ 2.0f) != 0.0f , "invalid fov , results in division by 0");
+
 
     float f = 1.0f / tanf(fov_radians / 2.0f);
     result.m[0][0] = f / aspect;
