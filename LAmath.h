@@ -7,8 +7,8 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <string.h> // for memcpy
-#include <cassert>
+#include <string.h> 
+#include <assert.h>
 
 #define HOEMEAN static inline
 
@@ -241,9 +241,9 @@ HOEMEAN Vec2f vec2f_normalize(Vec2f v)
 HOEMEAN Vec3f vec3f_add(Vec3f a, Vec3f b)
 {
     Vec3f result;
-    result.x = a.x + b.x;
-    result.y = a.y + b.y;
-    result.z = a.z + b.z;
+    result.x = (float) a.x + b.x;
+    result.y = (float) a.y + b.y;
+    result.z = (float) a.z + b.z;
     return result;
 }
 
@@ -254,6 +254,15 @@ HOEMEAN Vec3f vec3f_sub(Vec3f a, Vec3f b)
     result.y = a.y - b.y;
     result.z = a.z - b.z;
     return result;
+}
+ HOEMEAN Vec3f vec3f_scale(Vec3f v, float s)
+ {
+     Vec3f result;
+     result.x = v.x * s ;
+     result.y = v.y * s ;
+     result.z = v.z * s;
+     return result;
+    
 }
 
 HOEMEAN Vec3f vec3f_mul_scalar(Vec3f v, float s)
